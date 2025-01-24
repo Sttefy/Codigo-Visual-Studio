@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 class Vehiculo
 {
-    public string Placa { get; set; }
-    public string Marca { get; set; }
-    public string Modelo { get; set; }
+    public string Placa { get; set; } = string.Empty;
+    public string Marca { get; set; } = string.Empty;
+    public string Modelo { get; set; } = string.Empty;
     public int Anio { get; set; }
     public decimal Precio {get; set; }
 
@@ -42,7 +42,7 @@ class Program
                     BuscarVehiculoPorPlaca();
                     break;
                 case 3:
-                    VerVehiculosPorAño();
+                    VerVehiculosPorAnio();
                     break;
                 case 4:
                     VerTodosLosVehiculosRegistrados();
@@ -63,19 +63,39 @@ class Program
     static void AgregarVehiculo()
     {
         Console.WriteLine("Ingresar la placa: ");
-        string placa = Console.ReadLine();
+        string? placa = Console.ReadLine();
 
         Console.WriteLine("Ingresar marca: ");
-        string marca = Console.ReadLine();
+        string? marca = Console.ReadLine();
 
         Console.WriteLine("Ingresar modelo: ");
-        string modelo = Console.ReadLine();
+        string? modelo = Console.ReadLine();
 
         Console.WriteLine("Ingresar el año: ");
-        int anio = int.Parse(Console.ReadLine());
+        string? inputAnio = Console.ReadLine();
+        int anio;
+        if(int.TryParse(inputAnio, out anio))
+        {
+            Console.WriteLine($"El año que ingresaste es: {anio}");
+        }
+        else
+        {
+            Console.WriteLine("El año que ingresaste no es correcto.");
+            return;
+        }
 
         Console.WriteLine("Ingresar el precio: ");
-        decimal precio = decimal.Parse(Console.ReadLine());
+        string? inputPrecio = Console.ReadLine();
+        decimal precio;
+        if (decimal.TryParse(inputPrecio, out precio))
+        {
+            Console.WriteLine($"El precio ingresado es: {precio}");
+        }
+        else
+        {
+            Console.WriteLine("El precio ingresado no es válido.");
+            return;
+        }
 
         Vehiculo vehiculo = new Vehiculo { Placa = placa, Marca = marca, Modelo = modelo, Anio = anio, Precio = precio };
         listaVehiculos.AddLast(vehiculo);
@@ -86,11 +106,11 @@ class Program
     static void BuscarVehiculoPorPlaca()
     {
         Console.Write("Ingresar la placa del vehiculo a buscar: ");
-        string placa = Console.ReadLine();
+        string? placa = Console.ReadLine();
 
         foreach (Vehiculo vehiculo in listaVehiculos)
         {
-            if (vehiculo.Placa.Equals(placa, StringComparision.OrdinalIgnoreCase))
+            if (string.Equals(placa, vehiculo.Placa, StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Vehiculo encontrado:");
                 Console.WriteLine(vehiculo);
@@ -102,9 +122,20 @@ class Program
     static void VerVehiculosPorAnio()
     {
         Console.Write("Ingresar el año del vehiculo a buscar: ");
-        int anio = int.Parse(Console.ReadLine());
+        string? inputAnio = Console.ReadLine();
+        int anio;
+        if(int.TryParse(inputAnio, out anio))
+        {
+            Console.WriteLine($"El año que ingresaste es: {anio}");
+        }
+        else
+        {
+            Console.WriteLine("El año que ingresaste no es correcto.");
+            return;
+        }
 
-        bool encontrado = false
+
+        bool encontrado = false;
         foreach (Vehiculo vehiculo in listaVehiculos)
         {
             if (vehiculo.Anio == anio)
@@ -133,20 +164,25 @@ class Program
     }
     static void EliminarVehiculoRegistrado()
     {
-        Concole.Write("Ingresar la placa del vehiculo a eliminar: ");
-        string placa = Console.ReadLine();
+        Console.Write("Ingresar la placa del vehiculo a eliminar: ");
+        string? placa = Console.ReadLine();
 
-        LnkedListNode<Vehiculo> current = listaVehiculos.First;
+#pragma warning disable CS8600 
+        LinkedListNode<Vehiculo> current = listaVehiculos.First;
+#pragma warning restore CS8600 
         while (current != null)
         {
-            if (current.Value.Placa.Equals(placa, StringComparision.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(current.Value?.Placa) && 
+    current.Value.Placa.Equals(placa, StringComparison.OrdinalIgnoreCase))
             {
                 listaVehiculos.Remove(current);
                 Console.WriteLine("El vehiculo ha sido eliminado correctamente.");
                 return;
             }
+#pragma warning disable CS8600 
             current = current.Next;
+#pragma warning restore CS8600 
         }
-        console.WriteLine("El vehiculo no ha sido encontrado.");
+        Console.WriteLine("El vehiculo no ha sido encontrado.");
     }
 }
